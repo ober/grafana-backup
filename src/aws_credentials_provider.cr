@@ -52,7 +52,10 @@ module GrafanaBackup
 
     # Get credentials from ~/.aws/credentials file
     private def self.from_credentials_file(profile : String = "default") : Credentials?
-      credentials_path = File.expand_path("~/.aws/credentials")
+      home = ENV["HOME"]?
+      return nil unless home
+      
+      credentials_path = File.join(home, ".aws", "credentials")
       
       return nil unless File.exists?(credentials_path)
 
@@ -101,8 +104,12 @@ module GrafanaBackup
         "X-aws-ec2-metadata-token-ttl-seconds" => "21600",
       }
 
-      response = HTTP::Client.put(
-        "http://169.254.169.254/latest/api/token",
+      client = HTTP::Client.new("169.254.169.254")
+      client.connect_timeout = 1.second
+      client.read_timeout = 1.second
+      
+      response = client.put(
+        "/latest/api/token",
         headers: headers
       )
 
@@ -121,8 +128,12 @@ module GrafanaBackup
         "X-aws-ec2-metadata-token" => token,
       }
 
-      response = HTTP::Client.get(
-        "http://169.254.169.254/latest/meta-data/iam/security-credentials/",
+      client = HTTP::Client.new("169.254.169.254")
+      client.connect_timeout = 1.second
+      client.read_timeout = 1.second
+      
+      response = client.get(
+        "/latest/meta-data/iam/security-credentials/",
         headers: headers
       )
 
@@ -141,8 +152,12 @@ module GrafanaBackup
         "X-aws-ec2-metadata-token" => token,
       }
 
-      response = HTTP::Client.get(
-        "http://169.254.169.254/latest/meta-data/iam/security-credentials/#{role_name}",
+      client = HTTP::Client.new("169.254.169.254")
+      client.connect_timeout = 1.second
+      client.read_timeout = 1.second
+      
+      response = client.get(
+        "/latest/meta-data/iam/security-credentials/#{role_name}",
         headers: headers
       )
 

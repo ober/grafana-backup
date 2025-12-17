@@ -43,24 +43,41 @@ crystal build src/grafana-backup.cr -o bin/grafana-backup
 
 ## Configuration
 
-The tool is configured using environment variables:
+The tool is configured using environment variables. AWS credentials can be provided in multiple ways (see AWS Authentication section below).
 
 ### Required Variables
 
 - `GRAFANA_API_KEY`: Your Grafana API key with read access to dashboards
 - `S3_BUCKET`: The name of your AWS S3 bucket
-- `AWS_ACCESS_KEY_ID`: Your AWS access key ID
-- `AWS_SECRET_ACCESS_KEY`: Your AWS secret access key
 
 ### Optional Variables
 
 - `GRAFANA_URL`: Grafana instance URL (default: `http://localhost:3000`)
 - `S3_REGION`: AWS region for your S3 bucket (default: `us-east-1`)
 - `BACKUP_PREFIX`: Prefix for backup paths in S3 (default: `grafana-backups`)
+- `AWS_PROFILE`: AWS credentials profile to use from ~/.aws/credentials (default: `default`)
+
+### AWS Authentication
+
+The tool supports multiple methods for AWS authentication, checked in the following order:
+
+1. **Environment Variables** (highest priority)
+   - `AWS_ACCESS_KEY_ID`
+   - `AWS_SECRET_ACCESS_KEY`
+   - `AWS_SESSION_TOKEN` (optional, for temporary credentials)
+
+2. **AWS Credentials File** (`~/.aws/credentials`)
+   - Uses the profile specified by `AWS_PROFILE` environment variable (defaults to `default`)
+   - Standard AWS credentials file format
+
+3. **IAM Instance Role** (lowest priority)
+   - Automatically retrieves credentials from EC2 instance metadata service
+   - No configuration needed when running on EC2 with an IAM role attached
+   - Uses IMDSv2 for enhanced security
 
 ## Usage
 
-### Basic Usage
+### Basic Usage with Environment Variables
 
 ```bash
 export GRAFANA_URL="https://your-grafana-instance.com"
@@ -68,6 +85,42 @@ export GRAFANA_API_KEY="your-grafana-api-key"
 export S3_BUCKET="your-s3-bucket"
 export AWS_ACCESS_KEY_ID="your-aws-access-key"
 export AWS_SECRET_ACCESS_KEY="your-aws-secret-key"
+
+./bin/grafana-backup
+```
+
+### Using AWS Credentials File
+
+If you have AWS credentials configured in `~/.aws/credentials`:
+
+```bash
+export GRAFANA_URL="https://grafana.example.com"
+export GRAFANA_API_KEY="glsa_xxxxxxxxxxxx"
+export S3_BUCKET="my-grafana-backups"
+export S3_REGION="us-west-2"
+# AWS credentials will be read from ~/.aws/credentials
+
+./bin/grafana-backup
+```
+
+To use a specific profile from your credentials file:
+
+```bash
+export AWS_PROFILE="production"
+export GRAFANA_API_KEY="glsa_xxxxxxxxxxxx"
+export S3_BUCKET="my-grafana-backups"
+
+./bin/grafana-backup
+```
+
+### Using IAM Instance Role (EC2)
+
+When running on an EC2 instance with an attached IAM role:
+
+```bash
+export GRAFANA_API_KEY="glsa_xxxxxxxxxxxx"
+export S3_BUCKET="my-grafana-backups"
+# AWS credentials will be automatically retrieved from instance metadata
 
 ./bin/grafana-backup
 ```
@@ -94,8 +147,11 @@ GRAFANA_URL=https://grafana.example.com
 GRAFANA_API_KEY=glsa_xxxxxxxxxxxx
 S3_BUCKET=my-grafana-backups
 S3_REGION=us-west-2
+# Option 1: Use explicit credentials
 AWS_ACCESS_KEY_ID=AKIAXXXXXXXX
 AWS_SECRET_ACCESS_KEY=xxxxxxxxxxxxxxxx
+# Option 2: Use credentials file profile
+# AWS_PROFILE=production
 BACKUP_PREFIX=grafana-backups
 ```
 
