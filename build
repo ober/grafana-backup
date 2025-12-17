@@ -1,1 +1,4 @@
-docker run -u "$UID:${GROUPS[0]}" -v "$PWD":/src -it crystallang/crystal:1.14.1-alpine sh -c "cd /src && shards build --release --static grafana-backup"
+#!/usr/bin/env bash
+
+#docker run -v .:/src -it crystallang/crystal:1.14.1-alpine sh -c "cd /src && shards build --release --static grafana-backup"
+docker run -u "$UID:${GROUPS[0]}" -v .:/src -it crystallang/crystal:1.14.1-alpine sh -c "cd /src && shards build --release --static grafana-backup"

@@ -9,13 +9,13 @@ deps:
 # Build the application
 build: deps
 	@mkdir -p bin
-    ./build
+	./build
+
 # Build optimized release version
 release: deps
 	@mkdir -p bin
 	./build
 
-# Install to /usr/local/bin
 install: release
 	install -m 755 bin/grafana-backup /usr/local/bin/grafana-backup
 
