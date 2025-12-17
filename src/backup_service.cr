@@ -14,7 +14,7 @@ module GrafanaBackup
 
     def run
       puts "Starting Grafana backup..."
-      
+
       dashboards = @grafana_client.list_dashboards
       puts "Found #{dashboards.size} dashboards"
 
@@ -24,15 +24,15 @@ module GrafanaBackup
       dashboards.each do |dashboard_info|
         uid = dashboard_info["uid"].as_s
         title = dashboard_info["title"].as_s
-        
+
         puts "Backing up: #{title} (#{uid})"
-        
+
         begin
           dashboard = @grafana_client.get_dashboard(uid)
-          
+
           # Create S3 key with date path
           key = "#{@config.backup_prefix}/#{date_path}/#{uid}.json"
-          
+
           # Upload to S3
           @s3_uploader.upload(key, dashboard.to_pretty_json)
           backup_count += 1

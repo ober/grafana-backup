@@ -15,13 +15,13 @@ module GrafanaBackup
       )
 
       io = IO::Memory.new(content)
-      
+
       client.put_object(
         @config.s3_bucket,
         key,
         io
       )
-      
+
       puts "Uploaded to s3://#{@config.s3_bucket}/#{key}"
     end
   end

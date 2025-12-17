@@ -11,7 +11,7 @@ module GrafanaBackup
     puts "=" * 50
 
     config = Config.new
-    
+
     begin
       config.validate!
     rescue ex
