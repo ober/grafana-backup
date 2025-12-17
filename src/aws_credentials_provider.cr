@@ -104,9 +104,7 @@ module GrafanaBackup
         "X-aws-ec2-metadata-token-ttl-seconds" => "21600",
       }
 
-      client = HTTP::Client.new("169.254.169.254")
-      client.connect_timeout = 1.second
-      client.read_timeout = 1.second
+      client = create_metadata_client
       
       response = client.put(
         "/latest/api/token",
@@ -128,9 +126,7 @@ module GrafanaBackup
         "X-aws-ec2-metadata-token" => token,
       }
 
-      client = HTTP::Client.new("169.254.169.254")
-      client.connect_timeout = 1.second
-      client.read_timeout = 1.second
+      client = create_metadata_client
       
       response = client.get(
         "/latest/meta-data/iam/security-credentials/",
@@ -152,9 +148,7 @@ module GrafanaBackup
         "X-aws-ec2-metadata-token" => token,
       }
 
-      client = HTTP::Client.new("169.254.169.254")
-      client.connect_timeout = 1.second
-      client.read_timeout = 1.second
+      client = create_metadata_client
       
       response = client.get(
         "/latest/meta-data/iam/security-credentials/#{role_name}",
@@ -173,6 +167,14 @@ module GrafanaBackup
       end
     rescue
       nil
+    end
+
+    # Create HTTP client for EC2 metadata service with timeouts
+    private def self.create_metadata_client : HTTP::Client
+      client = HTTP::Client.new("169.254.169.254")
+      client.connect_timeout = 1.second
+      client.read_timeout = 1.second
+      client
     end
   end
 end
