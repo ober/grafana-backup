@@ -40,7 +40,12 @@ module GrafanaBackup
     def validate!
       raise "GRAFANA_API_KEY is required" if @grafana_api_key.empty?
       raise "S3_BUCKET is required" if @s3_bucket.empty?
-      raise "AWS credentials not found. Please set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment variables, configure ~/.aws/credentials, or use an IAM instance role." if @s3_access_key.empty? || @s3_secret_key.empty?
+      
+      if @s3_access_key.empty? || @s3_secret_key.empty?
+        raise "AWS credentials not found. Please set AWS_ACCESS_KEY_ID and " \
+              "AWS_SECRET_ACCESS_KEY environment variables, configure ~/.aws/credentials, " \
+              "or use an IAM instance role."
+      end
     end
   end
 end

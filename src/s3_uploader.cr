@@ -68,7 +68,8 @@ module GrafanaBackup
         # Execute the request
         response = client.exec(request)
 
-        unless response.status_code == 200
+        # Accept both 200 and 201 status codes for successful uploads
+        unless [200, 201].includes?(response.status_code)
           raise "Failed to upload to S3: #{response.status_code} - #{response.body}"
         end
       end
