@@ -25,19 +25,20 @@ git clone https://github.com/ober/grafana-backup.git
 cd grafana-backup
 ```
 
-2. Install dependencies:
+2. Install dependencies and build:
+```bash
+make build
+```
+
+Or build an optimized release version:
+```bash
+make release
+```
+
+Alternatively, you can use Crystal directly:
 ```bash
 shards install
-```
-
-3. Build the application:
-```bash
 crystal build src/grafana-backup.cr -o bin/grafana-backup
-```
-
-Or build with optimizations:
-```bash
-crystal build --release src/grafana-backup.cr -o bin/grafana-backup
 ```
 
 ## Configuration
