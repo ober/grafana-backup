@@ -1,0 +1,18 @@
+name: grafana-backup
+version: 1.0.0
+
+authors:
+  - Grafana Backup Team
+
+crystal: 1.11.2
+
+license: MIT
+
+targets:
+  grafana-backup:
+    main: src/grafana-backup.cr
+
+dependencies:
+  awscr-s3:
+    github: taylorfinnell/awscr-s3
+    version: ~> 0.8.3
