@@ -14,7 +14,7 @@ build: deps
 # Build optimized release version
 release: deps
 	@mkdir -p bin
-	crystal build --release --no-debug src/grafana-backup.cr -o bin/grafana-backup
+	crystal build --release --no-debug src/grafana-backup.cr -o bin/grafana-backup --static
 
 # Install to /usr/local/bin
 install: release
